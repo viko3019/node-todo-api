@@ -1,47 +1,26 @@
-var mongoose=require('mongoose');
+var express=require('express');
+var bodyParser=require('body-parser');
 
-mongoose.Promise = global.Promise;
-mongoose.connect('mongodb://localhost:27017/TodoApp');
+var {mongoose}=require('./db/mongoose');
+var {Todo}=require('./models/todo');
+var {User}=require('./models/user');
 
-var Todo=mongoose.model('Todo',{
-  text:{
-    type:String
-  },
-  completed:{
-    type:Boolean
-  },
-  completedAt:{
-    type:Number
-  }
+var app=express();
+
+app.use(bodyParser.json());
+
+app.post('/todos',function(req,res){
+  var todo=new Todo({
+    text:req.body.text
+  });
+
+  todo.save().then(function(doc){
+    res.send(doc);
+  },function(e){
+    res.send(e);
+  });
 });
 
-var newTodo=new Todo({
-   text:'hello me'
-});
-
-newTodo.save().then({
-  function(doc){
-    console.log('saved todo',doc);
-  }
-},function(e){
-  console.log('unable to save');
-});
-
-var User=mongoose.model('User',{
-  email:{
-    type:String,
-    required:true,
-    minlength:1,
-    trim:true
-  }
-});
-
-var user = new User({
-  email:'sb@g.com'
-});
-
-user.save().then(function(doc){
-  console.log(doc);
-},function(e){
-  console.log('unable to save',e);
+app.listen(3000,function(){
+  console.log('started on port 3000');
 });
