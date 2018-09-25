@@ -1,3 +1,3 @@
 # node-todo-api
 
-todo
+node todo api
